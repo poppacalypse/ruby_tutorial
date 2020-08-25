@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+require 'open-uri'
+require 'nokogiri'
+
+# ================ Shell scripts ======================
+# === Ch 9.3: DOM manipulation at the command line ===
+
+# Returns the paragraphs from a Wikipedia link, stripped of reference numbers.
+# Especially useful for text-to-speech (both native and foreign).
+
+# # Step 1: Read Wikipedia URL
+# url = ARGV[0]
+# # puts URI.open(url).read
+#
+# # Step 2: Parse with Nokogiri
+# doc = Nokogiri::HTML URI.open(url).read
+#
+# # Step 3: Remove the references
+# # doc.css('.reference').each { |reference| reference.remove }
+# doc.css('.reference').each &:remove # refactor of the above
+#
+# # Step 4: Collect and print paragraph content
+# # content_array = doc.css('p').map { |paragraph| paragraph.content }
+# # content_array = doc.css('p').map &:content # refactor of the above
+# # puts content_array.join "\n"
+#
+# # The last 2 lines can be further compacted into:
+# puts doc.css('p').map(&:content).join "\n"
+
+# ---------------------------------------------------
+
+# Exercise: What happens if you run wikp with no argument? Add code to your script to detect the absence of a command-line argument and output an appropriate usage statement. Hint: After printing out the usage statement, you will have to exit, which you can learn how to do with the search ruby how to exit script.
+
+url = ARGV[0]
+
+if !url
+  abort "Usage: pls enter a URL after wikp"
+else
+  doc = Nokogiri::HTML URI.open(url).read
+  doc.css('reference').each &:remove
+  puts doc.css('p').map(&:content).join "\n"
+
+  # Write to file:
+  # processed_text = doc.css('p').map(&:content).join "\n"
+  # puts processed_text
+  # File.write "article.txt", processed_text
+end
+
+# # Exercise: The “pipe to pbcopy” trick mentioned in the text works only on macOS, but any Unix-compatible system can redirect the output to a file. What’s the command to redirect the output of wikp to a file called article.txt? (You could then open this file, select all, and copy the contents, which has the same basic result as piping to pbcopy.)
+#
+# $ wikp https://example.com > article.txt
+#
+# # We can then manually open the file and copy, or:
+# $ cat article.txt
+#
+# # and then copy the output directly from CLI w/o having to use GUI
+
+# # There is no need to do a Write to file script, because the first command above already automatically creates and writes to `article.txt`

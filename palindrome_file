@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+require "poppacalypse_palindrome"
+require "fileutils"
+
+# ================ Shell scripts ======================
+# =========== Ch 9.1: Reading from files =========
+
+# 1A - Reading and processing the contents of a file
+
+# text = File.read "phrases.txt"
+# text.split("\n").each do |line|
+#   if line.palindrome?
+#     puts "palindrome detected: #{line}"
+#   end
+# end
+
+# 1B - Refactor: Switching to `readlines`.
+# `File` includes a `readlines` method that reads all the lines by default, without needing the additional `split`
+
+# lines = File.readlines "phrases.txt"
+
+# `puts` the result in REPL, but unecessary for writing to file
+
+# lines.each do |line|
+#   if line.palindrome?
+#     puts "palindrome detected: #{line}"
+#   end
+# end
+
+# 2A - Writing out the palindromes to a file following this template: `File.write(filename, content_string)`
+
+# palindromes = lines.select { |line| line.palindrome? }
+# File.write "palindromes_file.txt", palindromes.join
+
+# 2B - Refactor: Because the `palindrome?` method is called on each line itself, we can even use the “symbol-to-proc” notation
+
+# palindromes = lines.select &:palindrome?
+# File.write "palindromes_file.txt", palindromes.join
+
+
+# ---------------------------------------------------
+
+# Exercise: There is some duplication above: we first detect all palindromes, writing them out one at a time, and then find a list of all palindromes again (using `select`). Show that we can eliminate this duplication by replacing all of the above with the much more compact code below:
+
+palindromes = File.readlines("phrases.txt").select &:palindrome?
+
+palindromes.each { |palindrome| puts "palindrome detected: #{palindrome}" }
+
+File.write "palindromes_file2.txt", palindromes.join
+
+# ---------------------------------------------------
+
+# Exercise: Ruby has many utilities for replicating standard Unix-style filesystem operations like mv, cp, and rm, mostly concentrated in the FileUtils module. Using File.exist? and FileUtils.rm, write a program to remove the file palindromes_file.txt if it exists (you can use a file or irb). What happens if you use FileUtils.rm (without File.exist?) after removing the file?
+
+# I tried it out in the REPL first:
+
+# ?> if File.exist? "palindromes_file2.txt"
+# ?>   FileUtils.rm "palindromes_file2.txt"
+# >> end
+# => ["palindromes_file2.txt"]
+
+# This way also works:
+
+# >> FileUtils.rm "palindromes_file2.txt" if File.exist? "palindromes_file2.txt"
+# => ["palindromes_file2.txt"]
+
+# This is the file version:
+
+file = "palindromes_file3.txt"
+if File.exist? file
+  FileUtils.rm file
+  puts "File #{file} removed."
+else
+  puts "File #{file} does not exist."
+end

@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+require "poppacalypse_palindrome"
+require "open-uri"
+
+# ================ Shell scripts ======================
+# =========== Ch 9.2: Reading from URLs =========
+
+# lines = URI.open("https://cdn.learnenough.com/phrases.txt").readlines
+# lines.each do |line|
+#   if line.palindrome?
+#     puts "palindrome detected: #{line}"
+#   end
+# end
+
+# Exercise: Add code that writes out a file called palindromes_url.txt
+
+# palindromes = lines.select { |line| line.palindrome? }
+# File.write "palindromes_url.txt", palindromes.join
+
+# Modify the code above to use the more compact programming style seen in Ch 9.1 `palindrome_file` (including the step to write out the file).
+
+palindromes = URI.open("https://cdn.learnenough.com/phrases.txt").select &:palindrome?
+
+palindromes.each { |palindrome| puts "palindrome detected: #{palindrome}" }
+
+File.write "palindromes_url2.txt", palindromes.join
